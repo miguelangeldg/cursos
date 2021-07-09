@@ -1,42 +1,40 @@
-package clase7.laboratorio;
+package clase9.laboratorio;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 
-public abstract class Persona implements Persistencia {
-
-	private Integer id;
+public abstract class Persona {
+	
 	private String nombre;
 	private String apellido;
 	private Documento documento;
-	private Date fechaNacimiento;
-
-	private static int contador = 0;
-
+	private Date fechaNacimiento;		
+	
 	public Persona() {
 		super();
-		this.id = ++contador; // BOXING
 	}
 
 	public Persona(String nombre, String apellido, Documento documento, Date fechaNacimiento) {
 		super();
-		this.id = ++contador;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.documento = documento;
 		this.fechaNacimiento = fechaNacimiento;
 	}
-
-	/** METODO ABSTRACTO */
+	
+	
+	/**METODO ABSTRACTO*/
 	public abstract void mostrarTipoPersona();
-
+	
+	
 	@Override
 	public String toString() {
-		return "Persona [id=" + id + ", nombre=" + nombre + ", apellido=" + apellido + ", documento=" + documento
+		return "Persona [nombre=" + nombre + ", apellido=" + apellido + ", documento=" + documento
 				+ ", edad=" + calcularEdad() + "]";
 	}
+	
 
 	/**
 	 * java.time.LocalDate
@@ -71,16 +69,6 @@ public abstract class Persona implements Persistencia {
 		return edad;
 	}
 	
-	
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
 	public String getNombre() {
 		return nombre;
 	}
@@ -113,4 +101,5 @@ public abstract class Persona implements Persistencia {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
+	
 }

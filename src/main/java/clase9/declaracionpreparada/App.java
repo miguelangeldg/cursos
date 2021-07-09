@@ -18,18 +18,18 @@ public class App {
 //			System.out.println("Algo salio mal...");
 //		}
 
-		insertar();
+//		insertar();
 
 //		seleccionar();
 
 //		seleccionar("abc-001");
-//		seleccionar("abc-001' OR '' = '");
+//		seleccionar("abc-002' OR '' = '");
 
-//		actualizar();
+//		actualizar("abc-001");
 //		
 //		seleccionar();
 //		
-//		eliminar();
+		eliminar("abc-001");
 //		
 //		seleccionar();	
 
@@ -43,17 +43,17 @@ public class App {
 		try (Connection conexion = conectarBaseDeDatos()) { 
 
 			String sql = "insert into familiar(patenteNumero, patenteActiva, marca, categoria, color, encendido) "
-					+ " values(?, ?, ?, ?, ?, ?)";
+					+ "values(?, ?, ?, ?, ?, ?)";
 
-			PreparedStatement st = conexion.prepareStatement(sql);
-			st.setString(1, "abc-002");
-			st.setBoolean(2, false);
-			st.setString(3, "ford");
-			st.setString(4, "compacto");
-			st.setString(5, "azul");
-			st.setBoolean(6, true);
+			PreparedStatement pst = conexion.prepareStatement(sql);
+			pst.setString(1, "ABC-001");
+			pst.setBoolean(2, false);
+			pst.setString(3, "ford");
+			pst.setString(4, "compacto");
+			pst.setString(5, "azul");
+			pst.setBoolean(6, true);
 
-			st.execute();
+			pst.execute();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -61,22 +61,20 @@ public class App {
 
 	}
 
-	/**
-	 * 
-	 * @param filtro
-	 */
+	
 	private static void seleccionar(String filtro) {
 
 		try (Connection conexion = conectarBaseDeDatos()) {
 
 			String sql = "select patenteNumero, patenteActiva, marca, categoria, color, encendido " + "from familiar "
-					+ "where patenteNumero = '" + filtro + "'";
+					+ "where patenteNumero = ?"; //"abc-002' OR '' = '"
 
-			Statement st = conexion.createStatement();
+			PreparedStatement st = conexion.prepareStatement(sql);
+			st.setString(1, filtro);
 
 			System.out.println(sql);
 
-			ResultSet r = st.executeQuery(sql);
+			ResultSet r = st.executeQuery();
 
 			while (r.next()) {
 				System.out.println(r.getString(1));
@@ -92,42 +90,50 @@ public class App {
 		}
 
 	}
+	
+	
+	/**
+	 * ACTUALIZAMOS UN REGISTRO
+	 */
+	private static void actualizar(String patente) {
+
+		try (Connection conexion = conectarBaseDeDatos()) {
+
+			String sql = "update familiar set patenteActiva = ? where patenteNumero = ?";
+
+			PreparedStatement st = conexion.prepareStatement(sql);
+			st.setBoolean(1, true);
+			st.setString(2, patente);
+			
+			st.execute();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+	
 
 	/**
 	 * BORRAMOS UN REGISTRO
 	 */
-	private static void eliminar() {
+	private static void eliminar(String patente) {
 
 		try (Connection conexion = conectarBaseDeDatos()) {
 
-			String sql = "delete from familiar where patenteNumero = 'abc-001'";
+			String sql = "delete from familiar where patenteNumero = ?";
 
-			Statement st = conexion.createStatement();
-			st.execute(sql);
+			PreparedStatement st = conexion.prepareStatement(sql);
+			st.setString(1, patente);
+			
+			st.execute();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 	}
-
-	/**
-	 * ACTUALIZAMOS UN REGISTRO
-	 */
-	private static void actualizar() {
-
-		try (Connection conexion = conectarBaseDeDatos()) {
-
-			String sql = "update familiar set patenteActiva = 0 where patenteActiva = 1";
-
-			Statement st = conexion.createStatement();
-			st.execute(sql);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-	}
+	
 
 	/**
 	 * CONSULTA A LA BASE DE DATOS

@@ -1,4 +1,4 @@
-package clase7.laboratorio;
+package clase9.laboratorio;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,23 +19,29 @@ public class App {
 
 		Set<Persona> personas = new HashSet<>();
 		List<Persona> listaPersonas = new ArrayList<>();
+		int c;
 
-		int c = 0;
 		System.out.println("Ingrese la cantidad de personas");
 		c = consola.nextInt();
 
-		String nombre, apellido, tipoDoc;
-//		TiposDocumento tipoDoc;
+		String nombre, apellido;
 		int nroDoc, cc, tPersona;
 		Date fechaNac;
 		Persona persona = null;
-		boolean docCorrecto;
-		/* ATRIBUTOS DEL DIRECTOR */
+		TiposDocumento tipoDoc;
 		Date fechaCargo;
 		double sueldo;
 		String carrera;
 
 		for (int i = 0; i < c; i++) {
+
+			System.out.println("Ingrese el tipo de persona");
+			System.out.println("1 - Alumno.");
+			System.out.println("2 - Director.");
+			System.out.println("3 - Profesor.");
+			System.out.println("4 - Administrativo.");
+			System.out.println();
+			tPersona = consola.nextInt();
 
 			System.out.println("Ingrese el nombre");
 			nombre = consola.next();
@@ -44,43 +50,23 @@ public class App {
 			apellido = consola.next();
 
 			while (true) {
-				System.out.println("Ingrese el tipo de documento");
-				tipoDoc = consola.next();
-				try {
-					docCorrecto = false;
-					for (int j = 0; j < DocumentosValidos.tipoDocumento.length; j++) {
-						if (tipoDoc.equalsIgnoreCase(DocumentosValidos.tipoDocumento[j])) {
-							docCorrecto = true;
-							break;
-						}
-					}
-					if (!docCorrecto) {
-						throw new PersonaException(1);
-					}
-					break;
-				} catch (PersonaException e) {
-					System.out.println(e.getMessage());
-				}
-			}
+				System.out.print("Ingrese el Tipo de Documento de la Persona [" + (i + 1) + "]: ");
 
-			/*
-			 * while (true) { System.out.print("Ingrese el Tipo de Documento: ");
-			 * 
-			 * try { tipoDoc = TiposDocumento.valueOf( consola.next().toUpperCase() );
-			 * break;
-			 * 
-			 * } catch (Exception e) { System.out.println("Tipo de documento no valido"); }
-			 * }
-			 */
+				try {
+					tipoDoc = TiposDocumento.valueOf(consola.next().toUpperCase());
+					break;
+
+				} catch (Exception e) {
+					System.out.println("Tipo de documento no valido");
+				}
+
+			}
 
 			System.out.println("Ingrese el nro de documento");
 			nroDoc = Integer.parseInt(consola.next());
 
 			System.out.println("Ingrese la fecha de nacimiento");
 			fechaNac = obtenerFecha(); // obtenerFechaJava8();
-
-			System.out.println("Ingrese el tipo de persona");
-			tPersona = consola.nextInt();
 
 			switch (tPersona) {
 			case 1: // ALUMNO
@@ -93,8 +79,9 @@ public class App {
 					cursos[j] = consola.next();
 				}
 
+				/** CAMBIAMOS EL CONTRUCTOR DE DOCUMENTO PARA USAR EL ENUMERADO */
 				persona = new Alumno(nombre, apellido, new Documento(tipoDoc, nroDoc), fechaNac, cursos);
-
+				
 				break;
 
 			case 2: // DIRECTOR
@@ -107,9 +94,8 @@ public class App {
 				System.out.print("Ingrese el Sueldo");
 				sueldo = consola.nextFloat();
 
-				persona = new Director(nombre, apellido, new Documento(tipoDoc, nroDoc), fechaNac, fechaCargo, sueldo,
-						carrera);
-
+				persona = new Director(nombre, apellido, new Documento(tipoDoc, nroDoc), fechaNac, fechaCargo, sueldo, carrera);
+				
 				break;
 
 			case 3: // PROFESOR
@@ -131,6 +117,7 @@ public class App {
 				persona = new Profesor(nombre, apellido, new Documento(tipoDoc, nroDoc), fechaNac, fechaCargo, sueldo,
 						cursos);
 				break;
+				
 
 			case 4: // ADMINISTRATIVO
 				System.out.println("Ingrese la Fecha de inicio del Cargo");
@@ -141,58 +128,55 @@ public class App {
 
 				persona = new Administrativo(nombre, apellido, new Documento(tipoDoc, nroDoc), fechaNac, fechaCargo,
 						sueldo);
+								
+				/**AGREGAMOS UN ADMINISTRATIVO A LA BASE DE DATOS*/
+				AdministrativoImpl adm = new AdministrativoImpl();
+				adm.insertar(persona);
 				break;
 			}
 
-			personas.add(persona);
-
+			personas.add(persona);			
+			
 		}
 
-//		for (Persona p : personas) {
-//			System.out.println(p);
-//			p.mostrarTipoPersona();
-//		}
+		for (Persona p : personas) {
+			System.out.println(p);
+			p.mostrarTipoPersona();
+		}
 
+		/** AGREGAMOS LA COLECCION DE PERSONAS A UNA LISTA PARA PODER ORDENARLA */
 		listaPersonas.addAll(personas);
 		listaPersonas.sort(new OrdenDocumento());
 
-		System.out.println("\nPersonas Ordenadas por documento:");
+		System.out.println("\nPersonas Ordenadas:");
 		for (Persona p : listaPersonas) {
 			System.out.println(p);
 		}
-	
+		
 		asistencia(listaPersonas);
 
 		consola.close();
 	}
-
-	/**
-	 * Implementamos una cola para atender a las personas
-	 * 
-	 * @param personas
-	 */
+			
+	/**TOMA ASISTENCIA*/
 	private static void asistencia(Collection<Persona> personas) {
-
-		Queue<Persona> colaPersonas = new PriorityQueue<Persona>(new OrdenEdad());
+		Queue<Persona> colaPersonas = new PriorityQueue<Persona>(new OrdenEdadDesc());
 		colaPersonas.addAll(personas);
 
-		System.out.println("\nPersonas ordenas por fecha de nacimiento --> Mayor a menor edad.");
+		System.out.println("COLA DE ASISTENCIA");
 		while (!colaPersonas.isEmpty()) {
-//			System.out.println("\nPor atender a: " + colaPersonas.peek());
-			System.out.println("Atendido: " + colaPersonas.poll());
+			System.out.println("Por atender a: " + colaPersonas.peek());
+			System.out.println("Atendiendo a: " + colaPersonas.poll());
 		}
-
 	}
-
-	/***
-	 * 
-	 * @return java.util.Date
-	 */
+	
+	
+	/** OBTENEMOS LA FECHA DE TIPO DATE */
 	private static Date obtenerFecha() {
 		Date fecha = null;
 		int anio, mes, dia;
 
-		System.out.println("Ingrese el año");
+		System.out.println("Ingrese el a�o");
 		anio = consola.nextInt();
 
 		System.out.println("Ingrese el mes");
@@ -206,11 +190,7 @@ public class App {
 		return fecha;
 	}
 
-	/**
-	 * A partir de java 8
-	 * 
-	 * @return java.time.LocalDate
-	 */
+	/** OBTENEMOS LA FECHA DE TIPO LOCALDATE */
 	private static LocalDate obtenerFechaJava8() {
 		LocalDate fecha = null;
 		int anio, mes, dia;
