@@ -1,4 +1,4 @@
-package clases10.archivos;
+package clasee10.file;
 
 import java.io.File;
 

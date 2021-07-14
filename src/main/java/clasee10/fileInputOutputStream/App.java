@@ -1,4 +1,4 @@
-package clases10.lecturaYescritura;
+package clasee10.fileInputOutputStream;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,14 +21,14 @@ public class App {
 		
 		try {
 			fis = new FileInputStream(fEntrada);//leer un flujo de bytes
-//			fos = new FileOutputStream(fSalida);//escribir un flujo de bytes
+			fos = new FileOutputStream(fSalida);//escribir un flujo de bytes
 			
-//			fos.write(fis.readAllBytes());
+			fos.write(fis.readAllBytes());
 			
-			int c;
-			while((c = fis.read()) != -1) {
-				System.out.print( (char)c );
-			}
+//			int c;
+//			while((c = fis.read()) != -1) {
+//				System.out.print( (char)c );
+//			}
 			
 			
 		} catch (FileNotFoundException e) {
